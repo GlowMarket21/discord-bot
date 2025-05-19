@@ -63,6 +63,45 @@ async def stock(ctx):
         await ctx.send("⚠️ Hubo un error al verificar el stock.")
         print(f"[ERROR en !stock]: {e}")
 
+# COMANDO RESTOCK
+@bot.command()
+@solo_SendAccount()
+async def restock(ctx, servicio: str):
+    def check(m):
+        return m.author == ctx.author and m.channel == ctx.channel
+
+    await ctx.send(f"📩 {ctx.author.mention}, envía ahora las cuentas de `{servicio}` (una por línea). Tienes 2 minutos.")
+
+    try:
+        mensaje = await bot.wait_for("message", timeout=120.0, check=check)
+        nuevas_cuentas = [linea.strip() for linea in mensaje.content.split("\n") if ":" in linea]
+
+        if not nuevas_cuentas:
+            await ctx.send("⚠️ No se detectaron cuentas válidas (formato `usuario:clave`).")
+            return
+
+        archivo = f"{CARPETA_CUENTAS}/{servicio.lower()}.txt"
+
+        if not os.path.exists(CARPETA_CUENTAS):
+            os.makedirs(CARPETA_CUENTAS)
+
+        existentes = set()
+        if os.path.exists(archivo):
+            with open(archivo, "r") as f:
+                existentes = set(linea.strip() for linea in f if ":" in linea)
+
+        nuevas_unicas = [c for c in nuevas_cuentas if c not in existentes]
+
+        with open(archivo, "a") as f:
+            for cuenta in nuevas_unicas:
+                f.write(cuenta + "\n")
+
+        await ctx.send(f"✅ {len(nuevas_unicas)} cuenta(s) nuevas agregadas al stock de `{servicio.capitalize()}`. {len(nuevas_cuentas) - len(nuevas_unicas)} duplicadas fueron ignoradas.")
+
+    except asyncio.TimeoutError:
+        await ctx.send("⌛ Tiempo agotado. No se recibió ningún mensaje con cuentas.")
+
+
 # ENVIO DE CUENTA
 async def enviar_cuenta(servicio, ctx, usuario_objetivo):
     archivo = f"{CARPETA_CUENTAS}/{servicio}.txt"
