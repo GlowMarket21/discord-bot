@@ -4,42 +4,33 @@ import os
 import random
 import asyncio
 from discord.ext.commands import CheckFailure
-from dotenv import load_dotenv
-import os
-
-
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
-
 
 # CONFIGURACION
 CARPETA_CUENTAS = 'cuentas'
-ROL_SendAccount = 'SendAccount'
-DUEÑO_ID = 453802243234201600  # Reemplaza con tu ID de Discord
-VOUCH_CHANNEL_ID = 1373798620591165503  # Reemplaza con el ID de tu canal de vouches
+ROL_SEND = 'SendAccount'
+453802243234201600 = 453802243234201600  # Reemplaza con tu ID de Discord
+VOUCH_CHANNEL_ID = 1373998298976751616  # Reemplaza con el ID de tu canal de vouches
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# Decorador para restringir comandos a moderadores
+# Decorador para restringir comandos a usuarios con el rol 'SendAccount'
 def solo_SendAccount():
     async def predicate(ctx):
-        return any(rol.name == ROL_SendAccount for rol in ctx.author.roles)
+        return any(rol.name == ROL_SEND for rol in ctx.author.roles)
     return commands.check(predicate)
 
 # Manejo de errores por permisos
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        return  # no mostrar nada si el comando no existe
-
+        return  # Ignorar comandos no existentes
     if isinstance(error, CheckFailure):
         await ctx.send("🚫 No tienes permisos para usar este comando.")
     else:
         raise error
-
 
 # Comando STOCK
 @bot.command()
@@ -102,7 +93,7 @@ async def enviar_cuenta(servicio, ctx, usuario_objetivo):
 
     try:
         mensaje_enviado = await usuario_objetivo.send(
-            f"✅ Legit ACC - {nombre_formateado} | Lifetime ✅\n\n||{cuenta}||"
+            f"# Legit ACC - {nombre_formateado} | Lifetime ✅?\n\n||{cuenta}||"
         )
         await mensaje_enviado.add_reaction("✅")
         await mensaje_enviado.add_reaction("❌")
@@ -111,7 +102,7 @@ async def enviar_cuenta(servicio, ctx, usuario_objetivo):
             f"✅ Cuenta de {nombre_formateado} enviada por DM a {usuario_objetivo.mention}."
         )
 
-        dueño = await bot.fetch_user(DUEÑO_ID)
+        dueño = await bot.fetch_user(453802243234201600)
         await dueño.send(
             f"📦 **Cuenta enviada:** {nombre_formateado}\n"
             f"👤 **Cliente:** {usuario_objetivo.mention}\n"
@@ -128,12 +119,12 @@ async def enviar_cuenta(servicio, ctx, usuario_objetivo):
         )
 
         mensaje_enviado = await ctx.send(
-            f"✅ Legit ACC - {nombre_formateado} | Lifetime ✅\n\n||{cuenta}||"
+            f"# Legit ACC - {nombre_formateado} | Lifetime ✅?\n\n||{cuenta}||"
         )
         await mensaje_enviado.add_reaction("✅")
         await mensaje_enviado.add_reaction("❌")
 
-        dueño = await bot.fetch_user(DUEÑO_ID)
+        dueño = await bot.fetch_user(453802243234201600)
         await dueño.send(
             f"⚠️ *DM fallido: cuenta enviada en canal público.*\n"
             f"📦 **Cuenta enviada:** {nombre_formateado}\n"
@@ -145,7 +136,7 @@ async def enviar_cuenta(servicio, ctx, usuario_objetivo):
         await esperar_reaccion_vouch(bot, mensaje_enviado, usuario_objetivo, ctx.channel, ctx.author, cuenta, servicio)
 
 # REACCIONES Y VOUCH/RECLAMOS
-async def esperar_reaccion_vouch(bot, mensaje, usuario, canal_origen, SendAccount, cuenta, servicio):
+async def esperar_reaccion_vouch(bot, mensaje, usuario, canal_origen, moderador, cuenta, servicio):
     def check_reaccion(reaction, user):
         return (
             user == usuario
@@ -174,7 +165,7 @@ async def esperar_reaccion_vouch(bot, mensaje, usuario, canal_origen, SendAccoun
                 mensaje_problema = await bot.wait_for("message", timeout=300.0, check=check_mensaje)
 
                 await canal_origen.send(
-                    f"📣 {SendAccount.mention}, {usuario.mention} reportó un problema con su cuenta de **{servicio.capitalize()}**:\n"
+                    f"📣 {moderador.mention}, {usuario.mention} reportó un problema con su cuenta de **{servicio.capitalize()}**:\n"
                     f"📝 \"{mensaje_problema.content}\"\n"
                     f"🔑 Cuenta entregada: ||{cuenta}||"
                 )
@@ -187,7 +178,7 @@ async def esperar_reaccion_vouch(bot, mensaje, usuario, canal_origen, SendAccoun
     except asyncio.TimeoutError:
         pass
 
-# COMANDOS DE ENVIO
+# COMANDOS DE ENVÍO (completos)
 @bot.command()
 @solo_SendAccount()
 async def senddisney(ctx, usuario: discord.Member):
@@ -200,18 +191,8 @@ async def sendhbo(ctx, usuario: discord.Member):
 
 @bot.command()
 @solo_SendAccount()
-async def sendsteam(ctx, usuario: discord.Member):
-    await enviar_cuenta('steam', ctx, usuario)
-
-@bot.command()
-@solo_SendAccount()
-async def sendrockstar(ctx, usuario: discord.Member):
-    await enviar_cuenta('rockstar', ctx, usuario)
-
-@bot.command()
-@solo_SendAccount()
-async def sendtunnelbear(ctx, usuario: discord.Member):
-    await enviar_cuenta('tunnelbear', ctx, usuario)
+async def sendamazon(ctx, usuario: discord.Member):
+    await enviar_cuenta('amazon', ctx, usuario)
 
 @bot.command()
 @solo_SendAccount()
@@ -220,23 +201,8 @@ async def sendcapcut(ctx, usuario: discord.Member):
 
 @bot.command()
 @solo_SendAccount()
-async def sendduolingo(ctx, usuario: discord.Member):
-    await enviar_cuenta('duolingo', ctx, usuario)
-
-@bot.command()
-@solo_SendAccount()
-async def sendvodafone(ctx, usuario: discord.Member):
-    await enviar_cuenta('vodafone', ctx, usuario)
-
-@bot.command()
-@solo_SendAccount()
-async def sendparamount(ctx, usuario: discord.Member):
-    await enviar_cuenta('paramount', ctx, usuario)
-
-@bot.command()
-@solo_SendAccount()
-async def sendamazon(ctx, usuario: discord.Member):
-    await enviar_cuenta('amazon', ctx, usuario)
+async def sendcrunchyroll(ctx, usuario: discord.Member):
+    await enviar_cuenta('crunchyroll', ctx, usuario)
 
 @bot.command()
 @solo_SendAccount()
@@ -245,47 +211,32 @@ async def senddazn(ctx, usuario: discord.Member):
 
 @bot.command()
 @solo_SendAccount()
-async def sendcrunchyroll(ctx, usuario: discord.Member):
-    await enviar_cuenta('crunchyroll', ctx, usuario)
+async def sendduolingo(ctx, usuario: discord.Member):
+    await enviar_cuenta('duolingo', ctx, usuario)
 
 @bot.command()
 @solo_SendAccount()
-async def restock(ctx, servicio: str):
-    def check(m):
-        return m.author == ctx.author and m.channel == ctx.channel
+async def sendparamount(ctx, usuario: discord.Member):
+    await enviar_cuenta('paramount', ctx, usuario)
 
-    await ctx.send(f"📩 {ctx.author.mention}, envía ahora las cuentas de `{servicio}` (una por línea). Tienes 2 minutos.")
+@bot.command()
+@solo_SendAccount()
+async def sendrockstar(ctx, usuario: discord.Member):
+    await enviar_cuenta('rockstar', ctx, usuario)
 
-    try:
-        mensaje = await bot.wait_for("message", timeout=120.0, check=check)
-        nuevas_cuentas = [linea.strip() for linea in mensaje.content.split("\n") if ":" in linea]
+@bot.command()
+@solo_SendAccount()
+async def sendsteam(ctx, usuario: discord.Member):
+    await enviar_cuenta('steam', ctx, usuario)
 
-        if not nuevas_cuentas:
-            await ctx.send("⚠️ No se detectaron cuentas válidas (formato `usuario:clave`).")
-            return
+@bot.command()
+@solo_SendAccount()
+async def sendtunnelbear(ctx, usuario: discord.Member):
+    await enviar_cuenta('tunnelbear', ctx, usuario)
 
-        archivo = f"{CARPETA_CUENTAS}/{servicio.lower()}.txt"
+@bot.command()
+@solo_SendAccount()
+async def sendvodafone(ctx, usuario: discord.Member):
+    await enviar_cuenta('vodafone', ctx, usuario)
 
-        if not os.path.exists(archivo):
-            await ctx.send(f"❌ El servicio `{servicio}` no existe. Verifica el nombre.")
-            return
-
-        with open(archivo, "r") as f:
-            existentes = set(linea.strip() for linea in f if ":" in linea)
-
-        nuevas_unicas = [c for c in nuevas_cuentas if c not in existentes]
-
-        with open(archivo, "a") as f:
-            for cuenta in nuevas_unicas:
-                f.write(cuenta + "\n")
-
-        await ctx.send(
-            f"✅ {len(nuevas_unicas)} cuenta(s) nuevas agregadas al stock de `{servicio.capitalize()}`. "
-            f"{len(nuevas_cuentas) - len(nuevas_unicas)} duplicadas fueron ignoradas."
-        )
-
-    except asyncio.TimeoutError:
-        await ctx.send("⌛ Tiempo agotado. No se recibió ningún mensaje con cuentas.")
-
-
-bot.run(TOKEN)
+bot.run(os.getenv("DISCORD_TOKEN"))
