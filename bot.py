@@ -235,7 +235,7 @@ async def sendcrunchyroll(ctx, usuario: discord.Member):
     await enviar_cuenta('crunchyroll', ctx, usuario)
 
 @bot.command()
-@solo_restock()
+@solo_Encargado()
 async def restock(ctx, servicio: str):
     def check(m):
         return m.author == ctx.author and m.channel == ctx.channel
