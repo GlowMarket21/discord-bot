@@ -44,6 +44,11 @@ async def on_command_error(ctx, error):
 # Comando STOCK
 @bot.command()
 @solo_SendAccount()
+if not os.path.exists(CARPETA_CUENTAS):
+    os.makedirs(CARPETA_CUENTAS)
+    await ctx.send("⚠️ No se encontraron archivos de cuentas. Se creó la carpeta vacía.")
+    return
+
 async def stock(ctx):
     try:
         servicios = []
