@@ -8,18 +8,20 @@ from discord.ext.commands import CheckFailure
 # CONFIGURACION
 CARPETA_CUENTAS = 'cuentas'
 ROL_SEND = 'SendAccount'
-DUEÑO_ID = 453802243234201600  # Reemplaza con tu ID de Discord
-VOUCH_CHANNEL_ID = 1373998298976751616  # Reemplaza con el ID de tu canal de vouches
-
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+ROL_RESTOCK = 'Encargado'
+DUEÑO_ID = 123456789012345678  # Reemplaza con tu ID de Discord
+VOUCH_CHANNEL_ID = 987654321098765432  # Reemplaza con el ID de tu canal de vouches
 
 # Decorador para restringir comandos a usuarios con el rol 'SendAccount'
-def solo_SendAccount():
+def solo_enviadores():
     async def predicate(ctx):
         return any(rol.name == ROL_SEND for rol in ctx.author.roles)
+    return commands.check(predicate)
+
+# Decorador para restringir comandos a usuarios con el rol 'Encargado'
+def solo_encargados():
+    async def predicate(ctx):
+        return any(rol.name == ROL_RESTOCK for rol in ctx.author.roles)
     return commands.check(predicate)
 
 # Manejo de errores por permisos
@@ -65,7 +67,7 @@ async def stock(ctx):
 
 # COMANDO RESTOCK
 @bot.command()
-@solo_SendAccount()
+@solo_encargados()
 async def restock(ctx, servicio: str):
     def check(m):
         return m.author == ctx.author and m.channel == ctx.channel
@@ -100,7 +102,6 @@ async def restock(ctx, servicio: str):
 
     except asyncio.TimeoutError:
         await ctx.send("⌛ Tiempo agotado. No se recibió ningún mensaje con cuentas.")
-
 
 # ENVIO DE CUENTA
 async def enviar_cuenta(servicio, ctx, usuario_objetivo):
