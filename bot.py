@@ -43,7 +43,7 @@ async def on_command_error(ctx, error):
 
 # Comando STOCK
 @bot.command()
-@solo_enviadores()
+@solo_SendAccount()
 async def stock(ctx):
     try:
         if not os.path.exists(CARPETA_CUENTAS):
