@@ -24,23 +24,26 @@ def solo_encargados():
         return any(rol.name == ROL_RESTOCK for rol in ctx.author.roles)
     return commands.check(predicate)
 
-# Manejo de errores por permisos
-from discord.ext.commands import MissingRequiredArgument
+# MANEJO DE ERRORES
+from discord.ext.commands import CheckFailure, CommandNotFound, MissingRequiredArgument
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):
-        return  # Ignora comandos que no existen
+    if isinstance(error, CommandNotFound):
+        return  # Ignora comandos no válidos
 
     if isinstance(error, CheckFailure):
         await ctx.send("🚫 No tienes permisos para usar este comando.")
         return
 
     if isinstance(error, MissingRequiredArgument):
-        await ctx.send("⚠️ Faltan argumentos. Asegúrate de mencionar a un usuario. Ejemplo:\n`!senddisney @usuario`")
+        await ctx.send("⚠️ Faltan argumentos en el comando. Ejemplo de uso correcto: '!senddisney @usuario")
+
         return
 
-    raise error  # Deja pasar otros errores que sí queremos ver
+    # Otros errores se lanzan normalmente
+    raise error
+
 
 # Comando STOCK
 @bot.command()
