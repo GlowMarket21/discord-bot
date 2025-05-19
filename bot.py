@@ -14,7 +14,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 # CONFIGURACION
 CARPETA_CUENTAS = 'cuentas'
-ROL_SEND = 'SendAccount'
+ROL_SendAccount = 'SendAccount'
 DUEÑO_ID = 453802243234201600  # Reemplaza con tu ID de Discord
 VOUCH_CHANNEL_ID = 1373798620591165503  # Reemplaza con el ID de tu canal de vouches
 
