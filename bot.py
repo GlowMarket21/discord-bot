@@ -8,7 +8,7 @@ from discord.ext.commands import CheckFailure
 # CONFIGURACION
 CARPETA_CUENTAS = 'cuentas'
 ROL_SEND = 'SendAccount'
-453802243234201600 = 453802243234201600  # Reemplaza con tu ID de Discord
+DUEÑO_ID = 453802243234201600  # Reemplaza con tu ID de Discord
 VOUCH_CHANNEL_ID = 1373998298976751616  # Reemplaza con el ID de tu canal de vouches
 
 intents = discord.Intents.default()
