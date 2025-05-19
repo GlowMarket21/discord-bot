@@ -43,14 +43,14 @@ async def on_command_error(ctx, error):
 
 # Comando STOCK
 @bot.command()
-@solo_SendAccount()
-if not os.path.exists(CARPETA_CUENTAS):
-    os.makedirs(CARPETA_CUENTAS)
-    await ctx.send("⚠️ No se encontraron archivos de cuentas. Se creó la carpeta vacía.")
-    return
-
+@solo_enviadores()
 async def stock(ctx):
     try:
+        if not os.path.exists(CARPETA_CUENTAS):
+            os.makedirs(CARPETA_CUENTAS)
+            await ctx.send("⚠️ No se encontraron archivos de cuentas. Se creó la carpeta vacía.")
+            return
+
         servicios = []
         for archivo in os.listdir(CARPETA_CUENTAS):
             if archivo.endswith(".txt"):
@@ -72,7 +72,6 @@ async def stock(ctx):
         await ctx.send("⚠️ Hubo un error al verificar el stock.")
         print(f"[ERROR en !stock]: {e}")
 
-# ENVIO DE CUENTA
 # ENVIO DE CUENTA
 async def enviar_cuenta(servicio, ctx, usuario_objetivo):
     archivo = f"{CARPETA_CUENTAS}/{servicio}.txt"
