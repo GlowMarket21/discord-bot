@@ -32,10 +32,14 @@ def solo_SendAccount():
 # Manejo de errores por permisos
 @bot.event
 async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        return  # no mostrar nada si el comando no existe
+
     if isinstance(error, CheckFailure):
         await ctx.send("🚫 No tienes permisos para usar este comando.")
     else:
         raise error
+
 
 # Comando STOCK
 @bot.command()
