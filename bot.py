@@ -14,7 +14,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 # CONFIGURACION
 CARPETA_CUENTAS = 'cuentas'
-ROL_SendAccount = 'SendAccount'
+ROL_SEND = 'SendAccount'
 DUEÑO_ID = 453802243234201600  # Reemplaza con tu ID de Discord
 VOUCH_CHANNEL_ID = 1373798620591165503  # Reemplaza con el ID de tu canal de vouches
 
@@ -64,10 +64,16 @@ async def stock(ctx):
         print(f"[ERROR en !stock]: {e}")
 
 # ENVIO DE CUENTA
+# ENVIO DE CUENTA
 async def enviar_cuenta(servicio, ctx, usuario_objetivo):
     archivo = f"{CARPETA_CUENTAS}/{servicio}.txt"
+
+    # Crear carpeta y archivo si no existen
+    os.makedirs(CARPETA_CUENTAS, exist_ok=True)
     if not os.path.exists(archivo):
-        await ctx.send(f"❌ No existe el archivo de `{servicio}`.")
+        with open(archivo, 'w') as f:
+            pass  # crea archivo vacío
+        await ctx.send(f"⚠️ Archivo de `{servicio}` no existía y fue creado. Aún no contiene cuentas.")
         return
 
     with open(archivo, 'r') as f:
@@ -88,7 +94,7 @@ async def enviar_cuenta(servicio, ctx, usuario_objetivo):
 
     try:
         mensaje_enviado = await usuario_objetivo.send(
-            f"# Legit ACC - {nombre_formateado} | Lifetime ✅?\n\n||{cuenta}||"
+            f"✅ Legit ACC - {nombre_formateado} | Lifetime ✅\n\n||{cuenta}||"
         )
         await mensaje_enviado.add_reaction("✅")
         await mensaje_enviado.add_reaction("❌")
@@ -97,7 +103,7 @@ async def enviar_cuenta(servicio, ctx, usuario_objetivo):
             f"✅ Cuenta de {nombre_formateado} enviada por DM a {usuario_objetivo.mention}."
         )
 
-        dueño = await bot.fetch_user(453802243234201600)
+        dueño = await bot.fetch_user(DUEÑO_ID)
         await dueño.send(
             f"📦 **Cuenta enviada:** {nombre_formateado}\n"
             f"👤 **Cliente:** {usuario_objetivo.mention}\n"
@@ -119,7 +125,7 @@ async def enviar_cuenta(servicio, ctx, usuario_objetivo):
         await mensaje_enviado.add_reaction("✅")
         await mensaje_enviado.add_reaction("❌")
 
-        dueño = await bot.fetch_user(453802243234201600)
+        dueño = await bot.fetch_user(DUEÑO_ID)
         await dueño.send(
             f"⚠️ *DM fallido: cuenta enviada en canal público.*\n"
             f"📦 **Cuenta enviada:** {nombre_formateado}\n"
